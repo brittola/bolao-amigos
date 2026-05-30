@@ -1,0 +1,108 @@
+.bar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: color-mix(in oklch, var(--bg), transparent 8%);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--border);
+}
+
+.barInner {
+  max-width: var(--maxw-wide);
+  margin-inline: auto;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-3) var(--sp-4);
+}
+
+.brand {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  font-size: 0.92rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  color: var(--text);
+}
+.brandDim {
+  color: var(--text-faint);
+}
+.dot {
+  width: 0.55em;
+  height: 0.55em;
+  border-radius: 999px;
+  background: var(--amber);
+  box-shadow: 0 0 10px var(--amber);
+}
+
+.nav {
+  display: flex;
+  gap: 0.15rem;
+  margin-left: auto;
+}
+
+.tab {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  padding: 0.45rem 0.7rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  transition: color 150ms ease, background 150ms ease, border-color 150ms ease;
+}
+.tab:hover {
+  color: var(--text);
+  background: var(--surface);
+}
+.active {
+  color: var(--amber);
+  border-color: color-mix(in oklch, var(--amber), transparent 60%);
+  background: var(--amber-soft);
+}
+
+.user {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.2rem 0.1rem 0.2rem 0.4rem;
+  line-height: 1.1;
+}
+.userName {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text);
+  max-width: 8ch;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.logout {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+.user:hover .logout {
+  color: var(--loss);
+}
+
+.main {
+  flex: 1;
+}
+
+@media (max-width: 420px) {
+  .userName {
+    display: none;
+  }
+  .tab {
+    padding: 0.45rem 0.5rem;
+  }
+}

@@ -1,0 +1,68 @@
+.screen {
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  padding: var(--sp-5) var(--sp-4);
+}
+
+.panel {
+  width: 100%;
+  max-width: 380px;
+}
+
+.head {
+  text-align: center;
+  margin-bottom: var(--sp-6);
+}
+.logo {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  font-size: 1.05rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+}
+.logo .dot {
+  width: 0.5em;
+  height: 0.5em;
+  border-radius: 999px;
+  background: var(--amber);
+  box-shadow: 0 0 12px var(--amber);
+}
+.logoDim {
+  color: var(--text-faint);
+}
+.tagline {
+  margin-top: var(--sp-2);
+  color: var(--text-dim);
+  font-size: 0.9rem;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: var(--sp-5);
+}
+
+.title {
+  font-size: 1.25rem;
+  margin-bottom: var(--sp-5);
+}
+
+.foot {
+  margin-top: var(--sp-4);
+  text-align: center;
+  font-size: 0.88rem;
+  color: var(--text-dim);
+}
+.foot a {
+  color: var(--amber);
+  font-weight: 600;
+}
+
+.spacer {
+  margin-top: var(--sp-2);
+}

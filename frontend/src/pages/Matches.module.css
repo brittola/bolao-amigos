@@ -1,0 +1,76 @@
+.pageHead {
+  margin-bottom: var(--sp-5);
+}
+.title {
+  font-size: 1.9rem;
+  margin-top: var(--sp-1);
+}
+
+.group {
+  margin-bottom: var(--sp-6);
+}
+.groupLabel {
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--amber);
+  margin-bottom: var(--sp-3);
+  padding-bottom: var(--sp-2);
+  border-bottom: 1px solid var(--border);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+}
+
+.bonus {
+  margin-top: var(--sp-6);
+}
+
+/* Empty */
+.empty {
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--radius);
+  padding: var(--sp-6) var(--sp-4);
+  text-align: center;
+}
+.emptyTitle {
+  font-weight: 700;
+  font-size: 1.05rem;
+  margin: 0 0 var(--sp-2);
+}
+.emptyText {
+  color: var(--text-dim);
+  margin: 0 auto;
+  max-width: 38ch;
+  font-size: 0.92rem;
+}
+
+/* Skeleton */
+.skeletonWrap {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+}
+.skelTitle {
+  width: 40%;
+  height: 1.9rem;
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  margin-bottom: var(--sp-3);
+}
+.skelCard {
+  height: 9.5rem;
+  border-radius: var(--radius);
+  background: linear-gradient(100deg, var(--surface) 30%, var(--surface-2) 50%, var(--surface) 70%);
+  background-size: 200% 100%;
+  animation: shimmer 1.3s ease-in-out infinite;
+}
+@keyframes shimmer {
+  to {
+    background-position: -200% 0;
+  }
+}

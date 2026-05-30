@@ -1,0 +1,37 @@
+.stepper {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: var(--bg);
+}
+
+.btn {
+  width: 2.2rem;
+  height: 2.2rem;
+  border: none;
+  background: var(--surface-2);
+  color: var(--text);
+  font-size: 1.3rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 140ms ease, color 140ms ease;
+}
+.btn:hover:not(:disabled) {
+  background: var(--amber);
+  color: oklch(0.2 0.02 70);
+}
+.btn:disabled {
+  color: var(--text-faint);
+  cursor: not-allowed;
+}
+
+.value {
+  min-width: 2.4ch;
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--amber);
+  padding: 0 0.1rem;
+}

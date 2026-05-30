@@ -1,0 +1,42 @@
+:root {
+  /* Cor — preto quente + LED âmbar (committed) */
+  --bg: oklch(0.17 0.012 70);
+  --surface: oklch(0.21 0.013 70);
+  --surface-2: oklch(0.25 0.014 70);
+  --border: oklch(0.32 0.012 70);
+  --border-strong: oklch(0.42 0.012 70);
+
+  --text: oklch(0.93 0.01 85);
+  --text-dim: oklch(0.66 0.014 85);
+  --text-faint: oklch(0.5 0.012 85);
+
+  --amber: oklch(0.82 0.15 78);
+  --amber-2: oklch(0.74 0.17 66);
+  --amber-soft: oklch(0.82 0.15 78 / 0.12);
+
+  --win: oklch(0.8 0.15 150);
+  --win-soft: oklch(0.8 0.15 150 / 0.14);
+  --loss: oklch(0.64 0.19 28);
+  --live: oklch(0.7 0.19 25);
+
+  /* Tipografia */
+  --font-ui: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", "JetBrains Mono", "Roboto Mono", monospace;
+
+  /* Espaçamento (rem, ritmo variado) */
+  --sp-1: 0.25rem;
+  --sp-2: 0.5rem;
+  --sp-3: 0.75rem;
+  --sp-4: 1rem;
+  --sp-5: 1.5rem;
+  --sp-6: 2rem;
+  --sp-7: 3rem;
+
+  --radius: 0.5rem;
+  --radius-sm: 0.3rem;
+
+  --shadow: 0 1px 0 oklch(1 0 0 / 0.04) inset, 0 8px 24px oklch(0 0 0 / 0.35);
+
+  --maxw: 560px;
+  --maxw-wide: 760px;
+}

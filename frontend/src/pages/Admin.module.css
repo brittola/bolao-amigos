@@ -1,0 +1,126 @@
+.pageHead {
+  margin-bottom: var(--sp-5);
+}
+.title {
+  font-size: 1.9rem;
+  margin-top: var(--sp-1);
+}
+
+.sections {
+  display: grid;
+  gap: var(--sp-4);
+}
+@media (min-width: 680px) {
+  .sections {
+    grid-template-columns: 1fr 1fr;
+    align-items: start;
+  }
+  /* corrigir placar ocupa a linha inteira */
+  .sections > section:last-child {
+    grid-column: 1 / -1;
+  }
+}
+
+.section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: var(--sp-5);
+}
+.secHead {
+  margin-bottom: var(--sp-4);
+}
+.secTitle {
+  font-size: 1.05rem;
+}
+.secHint {
+  margin: var(--sp-2) 0 0;
+  color: var(--text-dim);
+  font-size: 0.85rem;
+}
+
+.invite {
+  margin-top: var(--sp-4);
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  flex-wrap: wrap;
+}
+.code {
+  flex: 1;
+  min-width: 0;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--amber);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 0.55rem 0.7rem;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+.inline {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--sp-3);
+  margin-bottom: var(--sp-4);
+}
+.inline:last-child {
+  margin-bottom: 0;
+}
+
+.fixList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+.fixRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  flex-wrap: wrap;
+  padding: var(--sp-3) 0;
+  border-bottom: 1px solid var(--border);
+}
+.fixRow:last-child {
+  border-bottom: none;
+}
+.fixTeams {
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  flex-wrap: wrap;
+}
+.vs {
+  color: var(--text-faint);
+}
+.manualTag {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--amber);
+  border: 1px solid color-mix(in oklch, var(--amber), transparent 60%);
+  padding: 0.1rem 0.35rem;
+  border-radius: 999px;
+}
+.fixControls {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+.num {
+  width: 3.4rem;
+  text-align: center;
+  font-family: var(--font-mono);
+  padding: 0.5rem;
+}
+.colon {
+  color: var(--text-faint);
+  font-weight: 700;
+}

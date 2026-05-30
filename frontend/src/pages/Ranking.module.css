@@ -1,0 +1,112 @@
+.pageHead {
+  margin-bottom: var(--sp-5);
+}
+.title {
+  font-size: 1.9rem;
+  margin-top: var(--sp-1);
+}
+
+.board {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 2.4rem 1fr auto;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: 0.8rem var(--sp-4);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+
+.pos {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-faint);
+  text-align: center;
+}
+.podium .pos {
+  color: var(--amber);
+}
+
+.name {
+  font-weight: 600;
+  font-size: 1.02rem;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  min-width: 0;
+}
+.youTag {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: oklch(0.2 0.02 70);
+  background: var(--amber);
+  padding: 0.1rem 0.35rem;
+  border-radius: 999px;
+}
+
+.detail {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--sp-4);
+}
+.exact {
+  color: var(--text-faint);
+  font-size: 0.82rem;
+}
+.points {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--text);
+  min-width: 3ch;
+  text-align: right;
+}
+.podium .points {
+  color: var(--amber);
+}
+
+.me {
+  border-color: var(--amber);
+  box-shadow: 0 0 0 1px var(--amber) inset, 0 0 18px var(--amber-soft);
+}
+
+.legend {
+  margin-top: var(--sp-5);
+  color: var(--text-faint);
+  font-size: 0.8rem;
+  text-align: center;
+}
+
+.empty {
+  color: var(--text-dim);
+  text-align: center;
+  padding: var(--sp-6) 0;
+}
+
+.skel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+.skelRow {
+  height: 3.4rem;
+  border-radius: var(--radius-sm);
+  background: linear-gradient(100deg, var(--surface) 30%, var(--surface-2) 50%, var(--surface) 70%);
+  background-size: 200% 100%;
+  animation: shimmer 1.3s ease-in-out infinite;
+}
+@keyframes shimmer {
+  to {
+    background-position: -200% 0;
+  }
+}
