@@ -7,6 +7,21 @@ export const matchesRouter = Router();
 
 matchesRouter.use(authenticate);
 
+// Brasil não observa horário de verão desde 2019: BRT é fixo em UTC-3.
+const BRT_OFFSET_MIN = -180;
+
+/**
+ * Janela "hoje + amanhã" em horário de Brasília, retornada como ISO em UTC.
+ * O servidor (Render) roda em UTC; calcular startOf('day') no fuso do servidor
+ * perde jogos noturnos cujo horário BRT vira o dia em UTC (ex.: 23h BRT = 02h UTC
+ * do dia seguinte). Mesmo motivo do `timezone` no getFixturesByDate da sync.
+ */
+export function brtDayWindow(now = moment()) {
+  const start = moment(now).utcOffset(BRT_OFFSET_MIN).startOf('day');
+  const end = moment(start).add(2, 'days');
+  return { start: start.toISOString(), end: end.toISOString() };
+}
+
 function team(row, prefix) {
   if (row[`${prefix}_id`] == null) return null;
   return {
@@ -19,14 +34,13 @@ function team(row, prefix) {
 /** Jogos de hoje + amanhã, com times, meu palpite e (se travado) os palpites de todos. */
 matchesRouter.get('/', async (req, res) => {
   const now = moment();
-  const start = moment().startOf('day');
-  const end = moment(start).add(2, 'days');
+  const { start, end } = brtDayWindow(now);
 
   const rows = await db('matches as m')
     .leftJoin('teams as ht', 'm.home_team_id', 'ht.id')
     .leftJoin('teams as at', 'm.away_team_id', 'at.id')
-    .where('m.kickoff_at', '>=', start.toISOString())
-    .andWhere('m.kickoff_at', '<', end.toISOString())
+    .where('m.kickoff_at', '>=', start)
+    .andWhere('m.kickoff_at', '<', end)
     .orderBy('m.kickoff_at')
     .select(
       'm.*',
