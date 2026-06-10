@@ -28,10 +28,11 @@
 }
 /* deixa o campo encolher abaixo da largura intrínseca do input,
    senão o botão "Salvar" estoura a área em telas estreitas (~335px) */
-.row .field {
+.row :global(.field) {
   min-width: 0;
+  width: calc(100% - 94px);
 }
-.row .input {
+.row :global(.input) {
   width: 100%;
 }
 .row .btn {
