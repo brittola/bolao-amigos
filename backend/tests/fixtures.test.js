@@ -55,13 +55,15 @@ describe('reserveRequest (trava de uso da API)', () => {
 });
 
 describe('createApiFootball', () => {
-  it('busca por data sem enviar season (restrição do plano free)', async () => {
+  it('busca por data no fuso de Brasília sem enviar season (restrição do plano free)', async () => {
     const http = { get: vi.fn().mockResolvedValue({ data: { response: SAMPLE } }) };
     const api = createApiFootball({ http });
     const result = await api.getFixturesByDate('2026-06-11');
     expect(http.get).toHaveBeenCalledOnce();
     const params = http.get.mock.calls[0][1].params;
-    expect(params).toEqual({ date: '2026-06-11' });
+    // sem timezone a API filtra por data em UTC e perde jogos noturnos de BRT
+    // (ex.: 23h BRT = 02h UTC do dia seguinte); fixamos America/Sao_Paulo
+    expect(params).toEqual({ date: '2026-06-11', timezone: 'America/Sao_Paulo' });
     expect(params.season).toBeUndefined();
     expect(result).toEqual(SAMPLE);
     const row = await db('api_usage').first();

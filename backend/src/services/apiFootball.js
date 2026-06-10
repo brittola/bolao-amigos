@@ -49,9 +49,11 @@ export function createApiFootball({ http = defaultHttp(), reserve = reserveReque
 
   return {
     // O plano free bloqueia `season` explícito mas permite buscar por data (janela ~hoje±1).
+    // `timezone` alinha o filtro de data ao horário de Brasília: sem ele a API filtra por
+    // data UTC e perde jogos noturnos (ex.: 23h BRT = 02h UTC do dia seguinte).
     // Buscamos todos os jogos da data e filtramos a Copa pela league.id no nosso lado.
     async getFixturesByDate(date) {
-      const all = await call({ date });
+      const all = await call({ date, timezone: 'America/Sao_Paulo' });
       return all.filter((f) => f.league?.id === league);
     },
     getFixturesByIds(ids) {
