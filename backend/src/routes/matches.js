@@ -9,15 +9,25 @@ matchesRouter.use(authenticate);
 
 // Brasil não observa horário de verão desde 2019: BRT é fixo em UTC-3.
 const BRT_OFFSET_MIN = -180;
+// A agenda do dia vai de 01:00 BRT até 01:00 BRT do dia seguinte: jogos da
+// madrugada (00:00–00:59) contam como a noite do dia anterior.
+const DAY_START_HOUR = 1;
 
 /**
  * Janela "hoje + amanhã" em horário de Brasília, retornada como ISO em UTC.
- * O servidor (Render) roda em UTC; calcular startOf('day') no fuso do servidor
- * perde jogos noturnos cujo horário BRT vira o dia em UTC (ex.: 23h BRT = 02h UTC
- * do dia seguinte). Mesmo motivo do `timezone` no getFixturesByDate da sync.
+ * O servidor (Render) roda em UTC; calcular o dia no fuso do servidor perde jogos
+ * noturnos cujo horário BRT vira o dia em UTC (ex.: 23h BRT = 02h UTC do dia
+ * seguinte). Mesmo motivo do `timezone` no getFixturesByDate da sync.
+ *
+ * O dia começa às 01:00 BRT (não meia-noite); por isso subtraímos a hora de corte
+ * antes do startOf e a somamos de volta — assim 00:30 BRT cai no dia anterior.
  */
 export function brtDayWindow(now = moment()) {
-  const start = moment(now).utcOffset(BRT_OFFSET_MIN).startOf('day');
+  const start = moment(now)
+    .utcOffset(BRT_OFFSET_MIN)
+    .subtract(DAY_START_HOUR, 'hours')
+    .startOf('day')
+    .add(DAY_START_HOUR, 'hours');
   const end = moment(start).add(2, 'days');
   return { start: start.toISOString(), end: end.toISOString() };
 }
