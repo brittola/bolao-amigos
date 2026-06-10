@@ -7,9 +7,8 @@
 
 .head {
   display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: var(--sp-3);
+  flex-direction: column;
+  gap: var(--sp-1);
   margin-bottom: var(--sp-4);
 }
 .note {
@@ -26,4 +25,15 @@
   display: flex;
   align-items: flex-end;
   gap: var(--sp-3);
+}
+/* deixa o campo encolher abaixo da largura intrínseca do input,
+   senão o botão "Salvar" estoura a área em telas estreitas (~335px) */
+.row .field {
+  min-width: 0;
+}
+.row .input {
+  width: 100%;
+}
+.row .btn {
+  flex-shrink: 0;
 }
