@@ -75,15 +75,13 @@ function InvitesSection() {
 
 function SyncSection() {
   const [busy, setBusy] = useState(false);
-  const [date, setDate] = useState("");
   const [result, setResult] = useState(null);
 
   async function sync() {
     setBusy(true);
     setResult(null);
     try {
-      const body = date ? { date } : {};
-      const { data } = await api.post("/admin/sync", body);
+      const { data } = await api.post("/admin/sync", {});
       setResult({
         type: "ok",
         msg: `${data.synced} jogos sincronizados${data.date ? ` em ${data.date}` : " (hoje + amanhã)"}.`,
@@ -98,18 +96,8 @@ function SyncSection() {
   return (
     <Section title="Sincronizar jogos" hint="Busca os jogos na API-Football. Consome requests do limite diário.">
       <div className={styles.inline}>
-        <div className="field" style={{ margin: 0, flex: 1 }}>
-          <label htmlFor="sync-date">Data específica (opcional)</label>
-          <input
-            id="sync-date"
-            type="date"
-            className="input"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-          />
-        </div>
         <button className="btn" onClick={sync} disabled={busy}>
-          {busy ? "..." : date ? "Buscar data" : "Buscar hoje+amanhã"}
+          {busy ? "..." : "Buscar hoje + amanhã"}
         </button>
       </div>
       {result && (
