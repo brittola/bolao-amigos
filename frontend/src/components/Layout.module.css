@@ -98,11 +98,28 @@
   flex: 1;
 }
 
-@media (max-width: 420px) {
-  .userName {
+/* Mobile: aperta a top bar para caber sem vazar (≈320–480px) */
+@media (max-width: 480px) {
+  .barInner {
+    gap: var(--sp-2);
+    padding: var(--sp-3);
+  }
+  .brand {
+    font-size: 0.8rem;
+  }
+  /* esconde o "/AMIGOS" para liberar espaço */
+  .brandDim {
     display: none;
   }
+  .nav {
+    gap: 0;
+  }
   .tab {
-    padding: 0.45rem 0.5rem;
+    font-size: 0.66rem;
+    letter-spacing: 0.08em;
+    padding: 0.4rem 0.45rem;
+  }
+  .userName {
+    display: none;
   }
 }

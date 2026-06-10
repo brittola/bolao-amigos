@@ -6,19 +6,11 @@
   margin-top: var(--sp-1);
 }
 
+/* Coluna única sempre — no desktop os painéis empilham na largura total */
 .sections {
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: var(--sp-4);
-}
-@media (min-width: 680px) {
-  .sections {
-    grid-template-columns: 1fr 1fr;
-    align-items: start;
-  }
-  /* corrigir placar ocupa a linha inteira */
-  .sections > section:last-child {
-    grid-column: 1 / -1;
-  }
 }
 
 .section {
@@ -123,4 +115,19 @@
 .colon {
   color: var(--text-faint);
   font-weight: 700;
+}
+
+/* Mobile: painéis mais justos e linhas input+botão empilhadas */
+@media (max-width: 480px) {
+  .section {
+    padding: var(--sp-4);
+  }
+  /* input em cima, botão embaixo ocupando 100% da largura */
+  .inline {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .inline button {
+    width: 100%;
+  }
 }
