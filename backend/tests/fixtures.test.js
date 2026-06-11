@@ -86,6 +86,16 @@ describe('createApiFootball', () => {
     expect(result.map((f) => f.fixture.id)).toEqual([1001, 2002]);
   });
 
+  it('lanca erro quando a API responde com errors (ex.: restrição de plano)', async () => {
+    const http = {
+      get: vi.fn().mockResolvedValue({
+        data: { response: [], errors: { plan: 'Free plans do not have access to the Ids parameter.' } },
+      }),
+    };
+    const api = createApiFootball({ http });
+    await expect(api.getFixturesByDate('2026-06-11')).rejects.toThrow(/plan/i);
+  });
+
   it('nao chama o http se a reserva falhar (teto atingido)', async () => {
     const today = new Date().toISOString().slice(0, 10);
     await db('api_usage').insert({ date: today, count: env.apiFootball.dailyCap });

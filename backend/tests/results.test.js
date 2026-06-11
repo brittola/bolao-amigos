@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeEach, afterAll, vi } from 'vitest';
+import moment from 'moment';
 import { db } from '../src/config/db.js';
 import { RULES } from '../src/config/scoring.js';
 import { recomputeMatchPoints, recomputeBonusPoints } from '../src/services/points.js';
@@ -69,45 +70,94 @@ describe('findPendingMatches', () => {
 });
 
 describe('pollResults', () => {
-  it('nao chama a API quando nao ha jogo pendente', async () => {
-    const client = { getFixturesByIds: vi.fn() };
-    const res = await pollResults({ client, now: new Date() });
-    expect(client.getFixturesByIds).not.toHaveBeenCalled();
-    expect(res.polled).toBe(0);
-  });
-
-  it('atualiza placar e computa pontos de jogo finalizado', async () => {
+  it('finaliza jogo pendente buscando por data (plano free bloqueia o parametro ids)', async () => {
     const player = await createPlayer({ email: 'a@bolao.local' });
-    const match = await createMatch({ api_fixture_id: 555, kickoff_at: hoursAgo(3), status: '2H' });
-    await db('predictions').insert({ user_id: player.id, match_id: match.id, home_score: 1, away_score: 0 });
+    const kickoff = hoursAgo(3);
+    const match = await createMatch({ api_fixture_id: 1489369, kickoff_at: kickoff, status: '2H' });
+    await db('predictions').insert({ user_id: player.id, match_id: match.id, home_score: 2, away_score: 0 });
 
+    const expectedDate = moment(kickoff).utcOffset(-180).format('YYYY-MM-DD');
     const client = {
-      getFixturesByIds: vi.fn().mockResolvedValue([
-        { fixture: { id: 555, date: hoursAgo(3), status: { short: 'FT' } }, league: { round: 'x' }, teams: { home: { id: null }, away: { id: null } }, goals: { home: 1, away: 0 } },
+      getFixturesByDate: vi.fn().mockResolvedValue([
+        { fixture: { id: 1489369, date: kickoff, status: { short: 'FT' } }, league: { id: 1, round: 'Group Stage - 1' }, teams: { home: { id: null }, away: { id: null } }, goals: { home: 2, away: 0 } },
       ]),
     };
 
     const res = await pollResults({ client, now: new Date() });
 
-    expect(client.getFixturesByIds).toHaveBeenCalledOnce();
+    expect(client.getFixturesByDate).toHaveBeenCalledWith(expectedDate);
     const updated = await db('matches').where({ id: match.id }).first();
     expect(updated.status).toBe('FT');
-    expect(updated.home_score).toBe(1);
+    expect(updated.home_score).toBe(2);
     expect(updated.score_source).toBe('api');
-
     const pred = await db('predictions').where({ match_id: match.id }).first();
     expect(pred.points).toBe(RULES.exactScore);
     expect(res.finalized).toBe(1);
   });
 
+  it('nao chama a API quando nao ha jogo pendente', async () => {
+    const client = { getFixturesByDate: vi.fn() };
+    const res = await pollResults({ client, now: new Date() });
+    expect(client.getFixturesByDate).not.toHaveBeenCalled();
+    expect(res.polled).toBe(0);
+  });
+
   it('nao computa pontos se o jogo ainda nao terminou', async () => {
-    await createMatch({ api_fixture_id: 777, kickoff_at: hoursAgo(3), status: '2H' });
+    const kickoff = hoursAgo(3);
+    await createMatch({ api_fixture_id: 777, kickoff_at: kickoff, status: '2H' });
     const client = {
-      getFixturesByIds: vi.fn().mockResolvedValue([
-        { fixture: { id: 777, date: hoursAgo(3), status: { short: '2H' } }, league: { round: 'x' }, teams: { home: { id: null }, away: { id: null } }, goals: { home: 1, away: 1 } },
+      getFixturesByDate: vi.fn().mockResolvedValue([
+        { fixture: { id: 777, date: kickoff, status: { short: '2H' } }, league: { id: 1, round: 'x' }, teams: { home: { id: null }, away: { id: null } }, goals: { home: 1, away: 1 } },
       ]),
     };
     const res = await pollResults({ client, now: new Date() });
     expect(res.finalized).toBe(0);
+  });
+
+  it('consulta cada data BRT uma unica vez para varios pendentes', async () => {
+    const kickoff = hoursAgo(3);
+    await createMatch({ api_fixture_id: 111, kickoff_at: kickoff, status: '2H' });
+    await createMatch({ api_fixture_id: 222, kickoff_at: kickoff, status: 'HT' });
+
+    const client = {
+      getFixturesByDate: vi.fn().mockResolvedValue([
+        { fixture: { id: 111, date: kickoff, status: { short: 'FT' } }, league: { id: 1, round: 'x' }, teams: { home: { id: null }, away: { id: null } }, goals: { home: 0, away: 0 } },
+        { fixture: { id: 222, date: kickoff, status: { short: 'FT' } }, league: { id: 1, round: 'x' }, teams: { home: { id: null }, away: { id: null } }, goals: { home: 3, away: 1 } },
+      ]),
+    };
+
+    const res = await pollResults({ client, now: new Date() });
+    expect(client.getFixturesByDate).toHaveBeenCalledOnce();
+    expect(res).toEqual({ polled: 2, finalized: 2 });
+  });
+
+  it('preserva placar manual e nao o sobrescreve com o da API', async () => {
+    const kickoff = hoursAgo(3);
+    const match = await createMatch({
+      api_fixture_id: 333, kickoff_at: kickoff, status: '2H', home_score: 5, away_score: 5,
+    });
+    await db('matches').where({ id: match.id }).update({ score_source: 'manual' });
+
+    const client = {
+      getFixturesByDate: vi.fn().mockResolvedValue([
+        { fixture: { id: 333, date: kickoff, status: { short: 'FT' } }, league: { id: 1, round: 'x' }, teams: { home: { id: null }, away: { id: null } }, goals: { home: 1, away: 0 } },
+      ]),
+    };
+
+    const res = await pollResults({ client, now: new Date() });
+    expect(res.finalized).toBe(0);
+    const after = await db('matches').where({ id: match.id }).first();
+    expect(after.home_score).toBe(5);
+    expect(after.score_source).toBe('manual');
+  });
+
+  it('deixa pendente o jogo cujo fixture nao volta na janela de datas', async () => {
+    const kickoff = hoursAgo(3);
+    await createMatch({ api_fixture_id: 444, kickoff_at: kickoff, status: '2H' });
+    const client = { getFixturesByDate: vi.fn().mockResolvedValue([]) };
+
+    const res = await pollResults({ client, now: new Date() });
+    expect(client.getFixturesByDate).toHaveBeenCalledOnce();
+    expect(res).toEqual({ polled: 1, finalized: 0 });
   });
 });

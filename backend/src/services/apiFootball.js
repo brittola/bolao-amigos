@@ -44,6 +44,14 @@ export function createApiFootball({ http = defaultHttp(), reserve = reserveReque
   async function call(params) {
     await reserve();
     const { data } = await http.get('/fixtures', { params });
+    // A API responde 200 mesmo em falha lógica (plano/parâmetro/cota), sinalizando
+    // só via `errors` (objeto/array não-vazio). Sem isso, falhas passavam caladas
+    // e o poll voltava "0 finalizados" como se tudo estivesse ok.
+    const errors = data?.errors;
+    const hasErrors = Array.isArray(errors) ? errors.length > 0 : errors && Object.keys(errors).length > 0;
+    if (hasErrors) {
+      throw new Error(`API-Football retornou erro: ${JSON.stringify(errors)}`);
+    }
     return data.response;
   }
 
@@ -55,9 +63,6 @@ export function createApiFootball({ http = defaultHttp(), reserve = reserveReque
     async getFixturesByDate(date) {
       const all = await call({ date, timezone: 'America/Sao_Paulo' });
       return all.filter((f) => f.league?.id === league);
-    },
-    getFixturesByIds(ids) {
-      return call({ ids: ids.join('-') });
     },
   };
 }
