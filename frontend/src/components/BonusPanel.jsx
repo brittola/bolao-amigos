@@ -11,6 +11,10 @@ const FIELDS = [
   },
 ];
 
+// Copa já começou: palpites bônus encerrados. Trava fixa no front (decisão do time);
+// para reabrir numa próxima edição, voltar para false.
+const CUP_STARTED = true;
+
 export default function BonusPanel() {
   const [values, setValues] = useState({ champion: "", top_scorer: "" });
   const [feedback, setFeedback] = useState(null); // { type: 'ok'|'error', msg }
@@ -44,6 +48,12 @@ export default function BonusPanel() {
         <span className={styles.note}>fecham no início da Copa · valem pontos extras</span>
       </header>
 
+      {CUP_STARTED && (
+        <div className="notice error" style={{ marginBottom: "0.75rem" }}>
+          A Copa já começou — palpites bônus encerrados.
+        </div>
+      )}
+
       {feedback && (
         <div className={`notice ${feedback.type === "ok" ? "ok" : "error"}`} style={{ marginBottom: "0.75rem" }}>
           {feedback.msg}
@@ -60,13 +70,14 @@ export default function BonusPanel() {
                 className="input"
                 value={values[f.type]}
                 placeholder={f.placeholder}
+                disabled={CUP_STARTED}
                 onChange={(e) => setValues((v) => ({ ...v, [f.type]: e.target.value }))}
               />
             </div>
             <button
               className="btn"
               onClick={() => save(f.type)}
-              disabled={savingType === f.type || !values[f.type].trim()}
+              disabled={CUP_STARTED || savingType === f.type || !values[f.type].trim()}
             >
               {savingType === f.type ? "..." : "Salvar"}
             </button>
