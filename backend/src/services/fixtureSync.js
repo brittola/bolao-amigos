@@ -1,6 +1,6 @@
 import moment from 'moment';
 import { db } from '../config/db.js';
-import { apiFootball } from './apiFootball.js';
+import { resolveProvider } from './footballProvider.js';
 
 /** Faz upsert de um time da API e retorna o id local (ou null se TBD). */
 async function upsertTeam(team, trx) {
@@ -52,7 +52,7 @@ export async function upsertFixture(fx) {
 }
 
 /** Busca os jogos de uma data na API e faz upsert de todos. Retorna a quantidade. */
-export async function syncFixtures(date, { client = apiFootball } = {}) {
+export async function syncFixtures(date, { client = resolveProvider() } = {}) {
   const fixtures = await client.getFixturesByDate(date);
   for (const fx of fixtures) {
     await upsertFixture(fx);
@@ -61,7 +61,7 @@ export async function syncFixtures(date, { client = apiFootball } = {}) {
 }
 
 /** Sincroniza hoje + próximos N dias (default 1 = hoje e amanhã). */
-export async function syncUpcoming({ days = 1, client = apiFootball, now = moment() } = {}) {
+export async function syncUpcoming({ days = 1, client = resolveProvider(), now = moment() } = {}) {
   let total = 0;
   for (let i = 0; i <= days; i++) {
     const date = moment(now).add(i, 'days').format('YYYY-MM-DD');

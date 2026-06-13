@@ -24,11 +24,21 @@ export const env = {
     password: process.env.ADMIN_PASSWORD,
   },
 
+  // Provider de dados de jogos/resultados: 'api-football' | 'football-data'
+  provider: process.env.FOOTBALL_PROVIDER,
+
   apiFootball: {
     key: process.env.API_FOOTBALL_KEY,
     baseUrl: process.env.API_FOOTBALL_BASE_URL,
     league: Number(process.env.API_FOOTBALL_LEAGUE),
     season: Number(process.env.API_FOOTBALL_SEASON),
     dailyCap: Number(process.env.API_FOOTBALL_DAILY_CAP),
+  },
+
+  // football-data.org (plano free: 10 req/min, inclui a Copa do Mundo = competição WC)
+  footballData: {
+    token: process.env.FOOTBALL_DATA_TOKEN,
+    baseUrl: process.env.FOOTBALL_DATA_BASE_URL,
+    competition: process.env.FOOTBALL_DATA_COMPETITION,
   },
 };

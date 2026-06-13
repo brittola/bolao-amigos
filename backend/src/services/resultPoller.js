@@ -1,6 +1,6 @@
 import moment from 'moment';
 import { db } from '../config/db.js';
-import { apiFootball } from './apiFootball.js';
+import { resolveProvider } from './footballProvider.js';
 import { recomputeMatchPoints } from './points.js';
 
 /** Status considerados finais pela API-Football. */
@@ -36,7 +36,7 @@ export async function findPendingMatches({ now = moment() } = {}) {
  * Copa de cada data BRT pendente e cruzar pelo fixture id. Jogos já finalizados
  * não entram em `findPendingMatches`, então não são reprocessados.
  */
-export async function pollResults({ client = apiFootball, now = moment() } = {}) {
+export async function pollResults({ client = resolveProvider(), now = moment() } = {}) {
   const pending = await findPendingMatches({ now });
   if (pending.length === 0) {
     return { polled: 0, finalized: 0 };
@@ -69,6 +69,8 @@ export async function pollResults({ client = apiFootball, now = moment() } = {})
       status: short,
       home_score: fx.goals?.home ?? null,
       away_score: fx.goals?.away ?? null,
+      home_penalties: fx.score?.penalty?.home ?? null,
+      away_penalties: fx.score?.penalty?.away ?? null,
       score_source: 'api',
       updated_at: db.fn.now(),
     });

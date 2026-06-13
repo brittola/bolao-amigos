@@ -151,6 +151,32 @@ describe('pollResults', () => {
     expect(after.score_source).toBe('manual');
   });
 
+  it('persiste o placar de penaltis e o status PEN no mata-mata', async () => {
+    const kickoff = hoursAgo(3);
+    const match = await createMatch({ api_fixture_id: 555, kickoff_at: kickoff, status: '2H', round: 'Round of 16' });
+    const client = {
+      getFixturesByDate: vi.fn().mockResolvedValue([
+        {
+          fixture: { id: 555, date: kickoff, status: { short: 'PEN' } },
+          league: { round: 'Round of 16' },
+          teams: { home: { id: null }, away: { id: null } },
+          goals: { home: 1, away: 1 },
+          score: { penalty: { home: 4, away: 5 } },
+        },
+      ]),
+    };
+
+    const res = await pollResults({ client, now: new Date() });
+
+    expect(res.finalized).toBe(1);
+    const updated = await db('matches').where({ id: match.id }).first();
+    expect(updated.status).toBe('PEN');
+    expect(updated.home_score).toBe(1);
+    expect(updated.away_score).toBe(1);
+    expect(updated.home_penalties).toBe(4);
+    expect(updated.away_penalties).toBe(5);
+  });
+
   it('deixa pendente o jogo cujo fixture nao volta na janela de datas', async () => {
     const kickoff = hoursAgo(3);
     await createMatch({ api_fixture_id: 444, kickoff_at: kickoff, status: '2H' });

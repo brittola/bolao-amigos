@@ -35,6 +35,23 @@ describe('PATCH /admin/matches/:id/score', () => {
     expect(pred.points).toBe(RULES.exactScore);
   });
 
+  it('aceita placar de penaltis no mata-mata (status PEN)', async () => {
+    const admin = await createAdmin();
+    const match = await createMatch({ api_fixture_id: 2, kickoff_at: new Date().toISOString(), status: '2H', round: 'Final' });
+
+    const res = await request(app)
+      .patch(`/admin/matches/${match.id}/score`)
+      .set('Authorization', `Bearer ${signToken(admin)}`)
+      .send({ home_score: 1, away_score: 1, status: 'PEN', home_penalties: 4, away_penalties: 2 });
+
+    expect(res.status).toBe(200);
+    const updated = await db('matches').where({ id: match.id }).first();
+    expect(updated.status).toBe('PEN');
+    expect(updated.home_penalties).toBe(4);
+    expect(updated.away_penalties).toBe(2);
+    expect(updated.score_source).toBe('manual');
+  });
+
   it('nega para jogador comum', async () => {
     const player = await createPlayer({ email: 'p@bolao.local' });
     const match = await createMatch({ api_fixture_id: 1, kickoff_at: new Date().toISOString() });

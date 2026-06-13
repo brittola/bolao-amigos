@@ -88,6 +88,8 @@ matchesRouter.get('/', async (req, res) => {
       status: r.status,
       home_score: r.home_score,
       away_score: r.away_score,
+      home_penalties: r.home_penalties,
+      away_penalties: r.away_penalties,
       home_team: team(r, 'home'),
       away_team: team(r, 'away'),
       locked,

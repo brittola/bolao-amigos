@@ -29,7 +29,7 @@ const FINAL_STATUSES = ['FT', 'AET', 'PEN'];
 
 /** Correção manual do placar de um jogo → marca origem 'manual' e recomputa pontos. */
 adminRouter.patch('/matches/:id/score', async (req, res) => {
-  const { home_score, away_score, status } = req.body || {};
+  const { home_score, away_score, status, home_penalties, away_penalties } = req.body || {};
   if (!Number.isInteger(home_score) || !Number.isInteger(away_score)) {
     return res.status(400).json({ error: 'Placar inválido' });
   }
@@ -41,6 +41,9 @@ adminRouter.patch('/matches/:id/score', async (req, res) => {
       home_score,
       away_score,
       status: finalStatus,
+      // pênaltis só fazem sentido no mata-mata; aceitos como inteiros, senão zerados
+      home_penalties: Number.isInteger(home_penalties) ? home_penalties : null,
+      away_penalties: Number.isInteger(away_penalties) ? away_penalties : null,
       score_source: 'manual',
       updated_at: db.fn.now(),
     })
