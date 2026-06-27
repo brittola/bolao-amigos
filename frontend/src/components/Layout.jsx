@@ -30,6 +30,9 @@ export default function Layout() {
             <NavLink to="/ranking" className={tabClass}>
               Ranking
             </NavLink>
+            <NavLink to="/historico" className={tabClass}>
+              Histórico
+            </NavLink>
             {user?.role === "admin" && (
               <NavLink to="/admin" className={tabClass}>
                 Admin

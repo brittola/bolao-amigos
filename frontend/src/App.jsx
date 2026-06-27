@@ -5,6 +5,7 @@ import Login from "./pages/Login.jsx";
 import Register from "./pages/Register.jsx";
 import Matches from "./pages/Matches.jsx";
 import Ranking from "./pages/Ranking.jsx";
+import Historico from "./pages/Historico.jsx";
 import Admin from "./pages/Admin.jsx";
 
 function Protected({ children, admin = false }) {
@@ -29,6 +30,7 @@ export default function App() {
       >
         <Route path="/" element={<Matches />} />
         <Route path="/ranking" element={<Ranking />} />
+        <Route path="/historico" element={<Historico />} />
         <Route
           path="/admin"
           element={
