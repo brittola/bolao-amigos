@@ -29,3 +29,24 @@ export async function recomputeBonusPoints(type) {
     await db('bonus_predictions').where({ id: p.id }).update({ points });
   }
 }
+
+/**
+ * Reaplica as regras de pontuação a todo o histórico (uso retroativo).
+ * Idempotente. Reaproveita os recompute por jogo e por tipo de bônus.
+ */
+export async function recomputeAllPoints() {
+  const matches = await db('matches')
+    .whereNotNull('home_score')
+    .whereNotNull('away_score')
+    .select('id');
+  for (const m of matches) {
+    await recomputeMatchPoints(m.id);
+  }
+
+  const bonusTypes = ['champion', 'top_scorer'];
+  for (const type of bonusTypes) {
+    await recomputeBonusPoints(type);
+  }
+
+  return { matches: matches.length, bonus: bonusTypes.length };
+}
