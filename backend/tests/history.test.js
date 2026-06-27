@@ -40,7 +40,7 @@ describe('GET /matches/history', () => {
     });
     // encerrada mais recente, sem meu palpite
     const recente = await createMatch({
-      api_fixture_id: 2, kickoff_at: past(2), status: 'FT',
+      api_fixture_id: 2, kickoff_at: past(2), status: 'AET',
       home_team_id: croacia.id, away_team_id: brasil.id, home_score: 0, away_score: 0,
     });
     // não encerrada — não deve aparecer
