@@ -51,7 +51,7 @@ export function brtRecentDaysWindow(now = moment()) {
   return { start: start.toISOString(), end: end.toISOString() };
 }
 
-function team(row, prefix) {
+export function team(row, prefix) {
   if (row[`${prefix}_id`] == null) return null;
   return {
     id: row[`${prefix}_id`],
