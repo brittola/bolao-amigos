@@ -4,6 +4,7 @@ import { db } from '../config/db.js';
 import { authenticate, requireAdmin } from '../middleware/auth.js';
 import { recomputeMatchPoints, recomputeBonusPoints, recomputeAllPoints } from '../services/points.js';
 import { syncUpcoming, syncFixtures } from '../services/fixtureSync.js';
+import { brtRecentDaysWindow, team } from './matches.js';
 
 export const adminRouter = Router();
 
@@ -55,6 +56,40 @@ adminRouter.patch('/matches/:id/score', async (req, res) => {
 
   await recomputeMatchPoints(Number(req.params.id));
   return res.json(updated[0]);
+});
+
+/** Jogos finalizados de ontem+hoje (BRT), para a correção manual de placar. */
+adminRouter.get('/matches/finished', async (_req, res) => {
+  const { start, end } = brtRecentDaysWindow();
+
+  const rows = await db('matches as m')
+    .leftJoin('teams as ht', 'm.home_team_id', 'ht.id')
+    .leftJoin('teams as at', 'm.away_team_id', 'at.id')
+    .whereIn('m.status', FINAL_STATUSES)
+    .andWhere('m.kickoff_at', '>=', start)
+    .andWhere('m.kickoff_at', '<', end)
+    .orderBy('m.kickoff_at', 'desc')
+    .select(
+      'm.*',
+      'ht.id as home_id', 'ht.name as home_name', 'ht.logo_url as home_logo',
+      'at.id as away_id', 'at.name as away_name', 'at.logo_url as away_logo',
+    );
+
+  const result = rows.map((r) => ({
+    id: r.id,
+    round: r.round,
+    kickoff_at: r.kickoff_at,
+    status: r.status,
+    home_score: r.home_score,
+    away_score: r.away_score,
+    home_penalties: r.home_penalties,
+    away_penalties: r.away_penalties,
+    score_source: r.score_source,
+    home_team: team(r, 'home'),
+    away_team: team(r, 'away'),
+  }));
+
+  return res.json(result);
 });
 
 const BONUS_TYPES = ['champion', 'top_scorer'];

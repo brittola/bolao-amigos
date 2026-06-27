@@ -160,7 +160,7 @@ function ScoreFixSection() {
   const [feedback, setFeedback] = useState(null);
 
   async function load() {
-    const { data } = await api.get("/matches");
+    const { data } = await api.get("/admin/matches/finished");
     setMatches(data);
   }
   useEffect(() => {
@@ -186,7 +186,7 @@ function ScoreFixSection() {
         </div>
       )}
       {matches.length === 0 ? (
-        <p className={styles.secHint}>Nenhum jogo na janela atual.</p>
+        <p className={styles.secHint}>Nenhum jogo finalizado nos últimos dois dias.</p>
       ) : (
         <ul className={styles.fixList}>
           {matches.map((m) => (

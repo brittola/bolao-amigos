@@ -16,6 +16,15 @@ const DAY_START_HOUR = 1;
 // Status que indicam jogo encerrado (mesma lista do front em MatchCard).
 const FINAL = ['FT', 'AET', 'PEN'];
 
+/** Início do "dia" de agenda (01:00 BRT) que contém `now`, como objeto moment. */
+function brtBusinessDayStart(now = moment()) {
+  return moment(now)
+    .utcOffset(BRT_OFFSET_MIN)
+    .subtract(DAY_START_HOUR, 'hours')
+    .startOf('day')
+    .add(DAY_START_HOUR, 'hours');
+}
+
 /**
  * Janela "hoje + amanhã" em horário de Brasília, retornada como ISO em UTC.
  * O servidor (Render) roda em UTC; calcular o dia no fuso do servidor perde jogos
@@ -26,16 +35,23 @@ const FINAL = ['FT', 'AET', 'PEN'];
  * antes do startOf e a somamos de volta — assim 00:30 BRT cai no dia anterior.
  */
 export function brtDayWindow(now = moment()) {
-  const start = moment(now)
-    .utcOffset(BRT_OFFSET_MIN)
-    .subtract(DAY_START_HOUR, 'hours')
-    .startOf('day')
-    .add(DAY_START_HOUR, 'hours');
+  const start = brtBusinessDayStart(now);
   const end = moment(start).add(2, 'days');
   return { start: start.toISOString(), end: end.toISOString() };
 }
 
-function team(row, prefix) {
+/**
+ * Janela "ontem + hoje" em horário de Brasília (dia começando às 01:00), retornada como
+ * ISO em UTC. Usada para listar jogos finalizados recentes (correção de placar).
+ */
+export function brtRecentDaysWindow(now = moment()) {
+  const todayStart = brtBusinessDayStart(now);
+  const start = moment(todayStart).subtract(1, 'day');
+  const end = moment(todayStart).add(1, 'day');
+  return { start: start.toISOString(), end: end.toISOString() };
+}
+
+export function team(row, prefix) {
   if (row[`${prefix}_id`] == null) return null;
   return {
     id: row[`${prefix}_id`],

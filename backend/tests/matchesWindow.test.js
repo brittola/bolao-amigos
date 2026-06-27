@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import moment from 'moment';
-import { brtDayWindow } from '../src/routes/matches.js';
+import { brtDayWindow, brtRecentDaysWindow } from '../src/routes/matches.js';
 
 describe('brtDayWindow', () => {
   // A agenda do "dia" vai de 01:00 BRT até 01:00 BRT do dia seguinte: jogos da
@@ -34,5 +34,23 @@ describe('brtDayWindow', () => {
     const a = brtDayWindow(now);
     const b = brtDayWindow(moment(now)); // mesmo instante
     expect(a).toEqual(b);
+  });
+});
+
+describe('brtRecentDaysWindow', () => {
+  // Janela = ontem + hoje, com a mesma fronteira de 01:00 BRT do brtDayWindow.
+  it('cobre ontem+hoje com fronteira de 01:00 BRT', () => {
+    const now = moment('2026-06-10T17:35:41Z'); // 14:35 BRT do dia 10
+    const { start, end } = brtRecentDaysWindow(now);
+    // [2026-06-09 01:00 BRT, 2026-06-11 01:00 BRT) = [04:00 UTC, 04:00 UTC)
+    expect(start).toBe('2026-06-09T04:00:00.000Z');
+    expect(end).toBe('2026-06-11T04:00:00.000Z');
+  });
+
+  it('entre 00:00 e 01:00 BRT ainda conta como o dia anterior', () => {
+    const now = moment('2026-06-10T03:30:00Z'); // 00:30 BRT do dia 10 → dia de agenda = 09/jun
+    const { start, end } = brtRecentDaysWindow(now);
+    expect(start).toBe('2026-06-08T04:00:00.000Z');
+    expect(end).toBe('2026-06-10T04:00:00.000Z');
   });
 });
