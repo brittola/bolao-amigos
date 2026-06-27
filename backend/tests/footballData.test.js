@@ -20,7 +20,7 @@ function fakeHttp(matches, headers = { 'x-requests-available-minute': '9' }) {
 }
 
 describe('footballData.getFixturesByDate', () => {
-  it('mapeia um jogo do football-data para o formato interno (utcDate→date, crest→logo, fullTime→goals)', async () => {
+  it('mapeia um jogo do football-data para o formato interno (utcDate→date, crest→logo, regularTime/fullTime→goals)', async () => {
     const http = fakeHttp([GROUP_MATCH]);
     const api = createFootballData({ http, competition: 'WC', sleep: vi.fn() });
 
@@ -61,13 +61,19 @@ describe('footballData.getFixturesByDate', () => {
     expect(fx.league.round).toBe('Round of 16');
   });
 
-  it('mata-mata na prorrogação (sem pênaltis): status AET', async () => {
+  it("mata-mata na prorrogação: goals = tempo regular (90'), não o pós-prorrogação", async () => {
     const aet = {
       ...GROUP_MATCH,
       id: 537061,
       status: 'FINISHED',
       stage: 'SEMI_FINALS',
-      score: { winner: 'HOME_TEAM', duration: 'EXTRA_TIME', fullTime: { home: 2, away: 1 } },
+      // 1-1 nos 90' (regularTime); 2-1 ao fim da prorrogação (fullTime)
+      score: {
+        winner: 'HOME_TEAM',
+        duration: 'EXTRA_TIME',
+        regularTime: { home: 1, away: 1 },
+        fullTime: { home: 2, away: 1 },
+      },
     };
     const http = fakeHttp([aet]);
     const api = createFootballData({ http, competition: 'WC', sleep: vi.fn() });
@@ -75,7 +81,7 @@ describe('footballData.getFixturesByDate', () => {
     const [fx] = await api.getFixturesByDate('2026-06-11');
 
     expect(fx.fixture.status.short).toBe('AET');
-    expect(fx.goals).toEqual({ home: 2, away: 1 });
+    expect(fx.goals).toEqual({ home: 1, away: 1 }); // 90', via regularTime — não 2-1
     expect(fx.score.penalty).toEqual({ home: null, away: null });
   });
 

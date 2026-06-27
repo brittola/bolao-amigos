@@ -5,6 +5,7 @@ import { adminRouter } from './routes/admin.js';
 import { matchesRouter } from './routes/matches.js';
 import { predictionsRouter } from './routes/predictions.js';
 import { rankingRouter } from './routes/ranking.js';
+import { rulesRouter } from './routes/rules.js';
 import { cronRouter } from './routes/cron.js';
 
 export const app = express();
@@ -19,6 +20,7 @@ app.use('/admin', adminRouter);
 app.use('/matches', matchesRouter);
 app.use('/predictions', predictionsRouter);
 app.use('/ranking', rankingRouter);
+app.use('/rules', rulesRouter);
 app.use('/cron', cronRouter);
 
 // Tratador de erros final
