@@ -21,8 +21,8 @@ describe('GET /ranking', () => {
     const m1 = await createMatch({ api_fixture_id: 1, kickoff_at: new Date().toISOString(), status: 'FT', home_score: 2, away_score: 1 });
     const m2 = await createMatch({ api_fixture_id: 2, kickoff_at: new Date().toISOString(), status: 'FT', home_score: 0, away_score: 0 });
 
-    // Ana: 1 exato (5) + 1 correctWinner (3) = 8, 1 exato
-    // Bia: 1 exato (5) + bonus champion (10) = 15, 1 exato
+    // Ana: 1 exato (25) + 1 correctWinner (12) = 37, 1 exato
+    // Bia: 1 exato (25) + bonus champion (35) = 60, 1 exato
     await db('predictions').insert([
       { user_id: ana.id, match_id: m1.id, home_score: 2, away_score: 1, points: RULES.exactScore, is_exact: true },
       { user_id: ana.id, match_id: m2.id, home_score: 1, away_score: 1, points: RULES.correctWinner, is_exact: false },
@@ -37,8 +37,8 @@ describe('GET /ranking', () => {
     expect(res.status).toBe(200);
 
     expect(res.body.map((r) => r.name)).toEqual(['Bia', 'Ana']);
-    expect(res.body[0]).toMatchObject({ name: 'Bia', points: 15, exact_count: 1 });
-    expect(res.body[1]).toMatchObject({ name: 'Ana', points: 8, exact_count: 1 });
+    expect(res.body[0]).toMatchObject({ name: 'Bia', points: RULES.exactScore + RULES.bonusChampion, exact_count: 1 });
+    expect(res.body[1]).toMatchObject({ name: 'Ana', points: RULES.exactScore + RULES.correctWinner, exact_count: 1 });
   });
 
   it('exige autenticação', async () => {

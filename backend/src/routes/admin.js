@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { randomBytes } from 'node:crypto';
 import { db } from '../config/db.js';
 import { authenticate, requireAdmin } from '../middleware/auth.js';
-import { recomputeMatchPoints, recomputeBonusPoints } from '../services/points.js';
+import { recomputeMatchPoints, recomputeBonusPoints, recomputeAllPoints } from '../services/points.js';
 import { syncUpcoming, syncFixtures } from '../services/fixtureSync.js';
 
 export const adminRouter = Router();
@@ -73,6 +73,12 @@ adminRouter.put('/bonus-results', async (req, res) => {
 
   await recomputeBonusPoints(type);
   return res.json({ type, value });
+});
+
+/** Recálculo retroativo: reaplica as regras de pontuação a todo o histórico. */
+adminRouter.post('/recompute', async (req, res) => {
+  const summary = await recomputeAllPoints();
+  return res.json(summary);
 });
 
 /**

@@ -1,14 +1,15 @@
 /**
  * Regras de pontuação do bolão — módulo isolado e ajustável.
  *
- * Os valores abaixo são placeholders. Ajuste conforme as regras finais
- * que você definir; toda a lógica de cálculo depende apenas destas constantes.
+ * Toda a lógica de cálculo depende apenas destas constantes; ajuste-as aqui
+ * para mudar a pontuação (e rode POST /admin/recompute para reaplicar ao histórico).
  */
 export const RULES = {
-  exactScore: 5, // acertou o placar exato
-  correctWinner: 3, // acertou o resultado (vencedor ou empate), mas não o placar
-  bonusChampion: 10, // acertou o campeão do torneio
-  bonusTopScorer: 10, // acertou o artilheiro do torneio
+  exactScore: 25, // cravou o placar exato
+  goalDifference: 15, // acertou o vencedor e o saldo de gols, mas não o placar
+  correctWinner: 12, // acertou o resultado (vencedor/empate), mas não o saldo
+  bonusChampion: 35, // acertou o campeão do torneio
+  bonusTopScorer: 35, // acertou o artilheiro do torneio
 };
 
 /** Sinal do confronto: 1 mandante vence, 0 empate, -1 visitante vence. */
@@ -29,6 +30,11 @@ export function computeMatchPoints(prediction, result) {
     prediction.home_score === result.home_score &&
     prediction.away_score === result.away_score;
   if (exact) return RULES.exactScore;
+
+  const sameGoalDiff =
+    prediction.home_score - prediction.away_score ===
+    result.home_score - result.away_score;
+  if (sameGoalDiff) return RULES.goalDifference;
 
   const sameOutcome =
     outcome(prediction.home_score, prediction.away_score) ===
