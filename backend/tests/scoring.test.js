@@ -12,14 +12,21 @@ describe('computeMatchPoints', () => {
     expect(points).toBe(RULES.exactScore);
   });
 
-  it('acertou o vencedor mas nao o placar vale correctWinner', () => {
-    // previu 2x0 (mandante vence), saiu 3x1 (mandante vence)
-    const points = computeMatchPoints({ home_score: 2, away_score: 0 }, { home_score: 3, away_score: 1 });
-    expect(points).toBe(RULES.correctWinner);
+  it('mesmo vencedor e mesmo saldo (nao exato) vale goalDifference', () => {
+    // previu 3x1 (saldo +2), saiu 2x0 (saldo +2): mesmo vencedor e saldo, placar diferente
+    const points = computeMatchPoints({ home_score: 3, away_score: 1 }, { home_score: 2, away_score: 0 });
+    expect(points).toBe(RULES.goalDifference);
   });
 
-  it('acertou o empate mas nao o placar vale correctWinner', () => {
-    const points = computeMatchPoints({ home_score: 0, away_score: 0 }, { home_score: 2, away_score: 2 });
+  it('empate com saldo certo (nao exato) vale goalDifference', () => {
+    // previu 2x2, saiu 1x1: empate, saldo 0 igual, placar diferente
+    const points = computeMatchPoints({ home_score: 2, away_score: 2 }, { home_score: 1, away_score: 1 });
+    expect(points).toBe(RULES.goalDifference);
+  });
+
+  it('acertou o vencedor mas com saldo diferente vale correctWinner', () => {
+    // previu 1x0 (saldo +1), saiu 2x0 (saldo +2): mesmo vencedor, saldo diferente
+    const points = computeMatchPoints({ home_score: 1, away_score: 0 }, { home_score: 2, away_score: 0 });
     expect(points).toBe(RULES.correctWinner);
   });
 
@@ -34,11 +41,10 @@ describe('computeMatchPoints', () => {
     expect(points).toBe(0);
   });
 
-  it('placar exato nao soma com tiers menores (retorna o maior)', () => {
-    // exato tambem satisfaz correctWinner, mas deve valer apenas exactScore
+  it('tiers sao exclusivos: exato retorna so exactScore (nao soma)', () => {
     const points = computeMatchPoints({ home_score: 2, away_score: 1 }, { home_score: 2, away_score: 1 });
     expect(points).toBe(RULES.exactScore);
-    expect(points).toBeLessThan(RULES.exactScore + RULES.correctWinner);
+    expect(points).toBeLessThan(RULES.exactScore + RULES.goalDifference);
   });
 });
 
