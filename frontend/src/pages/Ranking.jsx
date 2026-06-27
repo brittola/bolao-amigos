@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { api, errorMessage } from "../api/client.js";
 import { useAuth } from "../context/AuthContext.jsx";
+import ScoringPanel from "../components/ScoringPanel.jsx";
 import styles from "./Ranking.module.css";
 
 export default function Ranking() {
@@ -67,6 +68,8 @@ export default function Ranking() {
       <p className={styles.legend}>
         <span className="mono">n✓</span> placares exatos · <span className="mono">pts</span> pontuação total
       </p>
+
+      <ScoringPanel />
     </div>
   );
 }
