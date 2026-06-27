@@ -20,7 +20,7 @@ function fakeHttp(matches, headers = { 'x-requests-available-minute': '9' }) {
 }
 
 describe('footballData.getFixturesByDate', () => {
-  it('mapeia um jogo do football-data para o formato interno (utcDate→date, crest→logo, fullTime→goals)', async () => {
+  it('mapeia um jogo do football-data para o formato interno (utcDate→date, crest→logo, regularTime/fullTime→goals)', async () => {
     const http = fakeHttp([GROUP_MATCH]);
     const api = createFootballData({ http, competition: 'WC', sleep: vi.fn() });
 
