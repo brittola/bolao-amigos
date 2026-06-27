@@ -13,6 +13,9 @@ const BRT_OFFSET_MIN = -180;
 // madrugada (00:00–00:59) contam como a noite do dia anterior.
 const DAY_START_HOUR = 1;
 
+// Status que indicam jogo encerrado (mesma lista do front em MatchCard).
+const FINAL = ['FT', 'AET', 'PEN'];
+
 /**
  * Janela "hoje + amanhã" em horário de Brasília, retornada como ISO em UTC.
  * O servidor (Render) roda em UTC; calcular o dia no fuso do servidor perde jogos
@@ -97,6 +100,49 @@ matchesRouter.get('/', async (req, res) => {
         ? { home_score: mp.home_score, away_score: mp.away_score, points: mp.points }
         : null,
       ...(locked ? { predictions: lockedByMatch[r.id] || [] } : {}),
+    };
+  });
+
+  return res.json(result);
+});
+
+/** Histórico privado: partidas encerradas com o meu palpite e pontos (sem palpites alheios). */
+matchesRouter.get('/history', async (req, res) => {
+  const rows = await db('matches as m')
+    .leftJoin('teams as ht', 'm.home_team_id', 'ht.id')
+    .leftJoin('teams as at', 'm.away_team_id', 'at.id')
+    .whereIn('m.status', FINAL)
+    .orderBy('m.kickoff_at', 'desc')
+    .select(
+      'm.*',
+      'ht.id as home_id', 'ht.name as home_name', 'ht.logo_url as home_logo',
+      'at.id as away_id', 'at.name as away_name', 'at.logo_url as away_logo',
+    );
+
+  const matchIds = rows.map((r) => r.id);
+  const mine = matchIds.length
+    ? await db('predictions').where('user_id', req.user.id).whereIn('match_id', matchIds)
+    : [];
+  const myByMatch = Object.fromEntries(mine.map((p) => [p.match_id, p]));
+
+  const result = rows.map((r) => {
+    const mp = myByMatch[r.id];
+    return {
+      id: r.id,
+      api_fixture_id: r.api_fixture_id,
+      round: r.round,
+      kickoff_at: r.kickoff_at,
+      status: r.status,
+      home_score: r.home_score,
+      away_score: r.away_score,
+      home_penalties: r.home_penalties,
+      away_penalties: r.away_penalties,
+      home_team: team(r, 'home'),
+      away_team: team(r, 'away'),
+      locked: true,
+      my_prediction: mp
+        ? { home_score: mp.home_score, away_score: mp.away_score, points: mp.points }
+        : null,
     };
   });
 

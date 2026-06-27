@@ -15,7 +15,7 @@ function StatusBadge({ locked, status }) {
   return <span className="badge live">Ao vivo</span>;
 }
 
-export default function MatchCard({ match, onSave }) {
+export default function MatchCard({ match, onSave, variant = "matches" }) {
   const { locked, home_team, away_team, my_prediction } = match;
   const isFinal = FINAL.includes(match.status);
   const hasScore = match.home_score != null && match.away_score != null;
@@ -80,7 +80,7 @@ export default function MatchCard({ match, onSave }) {
           </button>
         </footer>
       ) : (
-        <LockedDetails match={match} />
+        <LockedDetails match={match} variant={variant} />
       )}
 
       {error && <div className="notice error" style={{ marginTop: "0.75rem" }}>{error}</div>}
@@ -109,39 +109,47 @@ function TeamRow({ name, logo, locked, score, value, onChange }) {
   );
 }
 
-function LockedDetails({ match }) {
+function LockedDetails({ match, variant }) {
+  const isHistory = variant === "history";
   const list = match.predictions || [];
   return (
     <div className={styles.locked}>
       <div className={styles.divider} />
-      {match.my_prediction && (
+      {match.my_prediction ? (
         <p className={styles.youHave}>
           Seu palpite: <b className="mono">{match.my_prediction.home_score}–{match.my_prediction.away_score}</b>
           {match.my_prediction.points != null && (
             <span className={styles.pts}> +{match.my_prediction.points} pts</span>
           )}
         </p>
-      )}
-      {list.length > 0 ? (
-        <ul className={styles.preds}>
-          {list
-            .slice()
-            .sort((a, b) => (b.points ?? -1) - (a.points ?? -1))
-            .map((p) => (
-              <li key={p.user_id} className={styles.predRow}>
-                <span className={styles.predName}>{p.user_name}</span>
-                <span className={`${styles.predScore} mono`}>
-                  {p.home_score}–{p.away_score}
-                </span>
-                <span className={`${styles.predPts} mono ${p.points > 0 ? styles.win : ""}`}>
-                  {p.points == null ? "—" : `+${p.points}`}
-                </span>
-              </li>
-            ))}
-        </ul>
       ) : (
-        <p className={styles.hint}>Ninguém palpitou neste jogo.</p>
+        isHistory && (
+          <p className={styles.youHave}>
+            <span className={styles.hint}>Sem palpite · 0 pts</span>
+          </p>
+        )
       )}
+      {!isHistory &&
+        (list.length > 0 ? (
+          <ul className={styles.preds}>
+            {list
+              .slice()
+              .sort((a, b) => (b.points ?? -1) - (a.points ?? -1))
+              .map((p) => (
+                <li key={p.user_id} className={styles.predRow}>
+                  <span className={styles.predName}>{p.user_name}</span>
+                  <span className={`${styles.predScore} mono`}>
+                    {p.home_score}–{p.away_score}
+                  </span>
+                  <span className={`${styles.predPts} mono ${p.points > 0 ? styles.win : ""}`}>
+                    {p.points == null ? "—" : `+${p.points}`}
+                  </span>
+                </li>
+              ))}
+          </ul>
+        ) : (
+          <p className={styles.hint}>Ninguém palpitou neste jogo.</p>
+        ))}
     </div>
   );
 }

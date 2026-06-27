@@ -27,6 +27,9 @@ export default function Layout() {
             <NavLink to="/" end className={tabClass}>
               Jogos
             </NavLink>
+            <NavLink to="/historico" className={tabClass}>
+              Histórico
+            </NavLink>
             <NavLink to="/ranking" className={tabClass}>
               Ranking
             </NavLink>

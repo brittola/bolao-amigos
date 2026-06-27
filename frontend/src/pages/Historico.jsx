@@ -1,40 +1,26 @@
 import { useEffect, useState } from "react";
 import { api, errorMessage } from "../api/client.js";
 import MatchCard from "../components/MatchCard.jsx";
-import BonusPanel from "../components/BonusPanel.jsx";
 import { buildDayGroups } from "../lib/day.js";
 import MatchListSkeleton from "../components/MatchListSkeleton.jsx";
 import styles from "./Matches.module.css";
 
-export default function Matches() {
+export default function Historico() {
   const [matches, setMatches] = useState(null);
   const [error, setError] = useState("");
 
   async function load() {
     try {
-      const { data } = await api.get("/matches");
+      const { data } = await api.get("/matches/history");
       setMatches(data);
     } catch (err) {
-      setError(errorMessage(err, "Não foi possível carregar os jogos."));
+      setError(errorMessage(err, "Não foi possível carregar o histórico."));
     }
   }
 
   useEffect(() => {
     load();
   }, []);
-
-  async function handleSave(matchId, home, away) {
-    try {
-      await api.post("/predictions", { match_id: matchId, home_score: home, away_score: away });
-      setMatches((prev) =>
-        prev.map((m) =>
-          m.id === matchId ? { ...m, my_prediction: { home_score: home, away_score: away, points: null } } : m
-        )
-      );
-    } catch (err) {
-      throw errorMessage(err, "Não foi possível salvar o palpite.");
-    }
-  }
 
   if (error) {
     return (
@@ -52,20 +38,22 @@ export default function Matches() {
     );
   }
 
+  // O backend já devolve as partidas em ordem decrescente de kickoff; basta
+  // preservar essa ordem ao agrupar por dia.
   const groups = buildDayGroups(matches);
 
   return (
     <div className="container">
       <header className={styles.pageHead}>
-        <span className="eyebrow">Rodada</span>
-        <h1 className={styles.title}>Jogos</h1>
+        <span className="eyebrow">Seus palpites</span>
+        <h1 className={styles.title}>Histórico</h1>
       </header>
 
       {matches.length === 0 ? (
         <div className={styles.empty}>
-          <p className={styles.emptyTitle}>Nenhum jogo por enquanto.</p>
+          <p className={styles.emptyTitle}>Nenhuma partida encerrada ainda.</p>
           <p className={styles.emptyText}>
-            Cada jogo aparece aqui um dia antes de acontecer, com os palpites abertos até o apito inicial.
+            Quando os jogos terminarem, eles aparecem aqui com o seu palpite e os pontos.
           </p>
         </div>
       ) : (
@@ -74,16 +62,12 @@ export default function Matches() {
             <h2 className={styles.groupLabel}>{g.label}</h2>
             <div className={styles.list}>
               {g.items.map((m) => (
-                <MatchCard key={m.id} match={m} onSave={handleSave} />
+                <MatchCard key={m.id} match={m} variant="history" />
               ))}
             </div>
           </section>
         ))
       )}
-
-      <div className={styles.bonus}>
-        <BonusPanel />
-      </div>
     </div>
   );
 }
