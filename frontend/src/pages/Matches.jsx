@@ -1,22 +1,9 @@
 import { useEffect, useState } from "react";
-import moment from "moment";
 import { api, errorMessage } from "../api/client.js";
 import MatchCard from "../components/MatchCard.jsx";
 import BonusPanel from "../components/BonusPanel.jsx";
+import { dayBucket } from "../lib/day.js";
 import styles from "./Matches.module.css";
-
-// O dia da agenda vai de 01:00 às 01:00 do dia seguinte (igual ao back): jogos da
-// madrugada (00:00–00:59) entram na noite do dia anterior.
-const DAY_START_HOUR = 1;
-const businessDay = (value) => moment(value).subtract(DAY_START_HOUR, "hours").startOf("day");
-
-function dayBucket(kickoff) {
-  const d = businessDay(kickoff);
-  const today = businessDay(moment());
-  if (d.isSame(today, "day")) return "Hoje";
-  if (d.isSame(moment(today).add(1, "day"), "day")) return "Amanhã";
-  return d.format("dddd, DD [de] MMM");
-}
 
 export default function Matches() {
   const [matches, setMatches] = useState(null);
