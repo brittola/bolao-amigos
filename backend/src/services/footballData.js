@@ -24,7 +24,9 @@ const STATUS_MAP = {
 /**
  * Código de status interno. Jogo finalizado vira FT/AET/PEN conforme a duração
  * (`score.duration`): tempo normal → FT, prorrogação → AET, disputa de pênaltis → PEN.
- * Em todos, o placar que pontua o bolão é `score.fullTime` (normal + prorrogação).
+ * O placar que pontua o bolão é o tempo regular: `score.regularTime` (90'), com
+ * fallback para `score.fullTime` quando não há prorrogação. Assim o mata-mata pontua
+ * pelos 90' (sem prorrogação/pênaltis) sem precisar detectar a fase.
  */
 function mapStatus(match) {
   if (match.status === 'FINISHED' || match.status === 'AWARDED') {
@@ -73,8 +75,8 @@ function toFixture(match) {
     league: { round: mapRound(match) },
     teams: { home: mapTeam(match.homeTeam), away: mapTeam(match.awayTeam) },
     goals: {
-      home: match.score?.fullTime?.home ?? null,
-      away: match.score?.fullTime?.away ?? null,
+      home: match.score?.regularTime?.home ?? match.score?.fullTime?.home ?? null,
+      away: match.score?.regularTime?.away ?? match.score?.fullTime?.away ?? null,
     },
     // Disputa de pênaltis (null fora do mata-mata). Mesmo path do raw da API-Football
     // (`score.penalty`), então o poller lê de um único lugar nos dois providers.
