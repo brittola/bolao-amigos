@@ -1,8 +1,8 @@
 /**
  * Regras de pontuação do bolão — módulo isolado e ajustável.
  *
- * Os valores abaixo são placeholders. Ajuste conforme as regras finais
- * que você definir; toda a lógica de cálculo depende apenas destas constantes.
+ * Toda a lógica de cálculo depende apenas destas constantes; ajuste-as aqui
+ * para mudar a pontuação (e rode POST /admin/recompute para reaplicar ao histórico).
  */
 export const RULES = {
   exactScore: 25, // cravou o placar exato
