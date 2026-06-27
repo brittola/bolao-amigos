@@ -14,3 +14,15 @@ export function dayBucket(kickoff) {
   if (d.isSame(moment(today).add(1, "day"), "day")) return "Amanhã";
   return d.format("dddd, DD [de] MMM");
 }
+
+/** Agrupa partidas por dia (via dayBucket), preservando a ordem recebida. */
+export function buildDayGroups(matches) {
+  const groups = [];
+  for (const m of matches) {
+    const label = dayBucket(m.kickoff_at);
+    let g = groups.find((x) => x.label === label);
+    if (!g) groups.push((g = { label, items: [] }));
+    g.items.push(m);
+  }
+  return groups;
+}

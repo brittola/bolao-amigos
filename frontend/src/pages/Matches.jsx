@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { api, errorMessage } from "../api/client.js";
 import MatchCard from "../components/MatchCard.jsx";
 import BonusPanel from "../components/BonusPanel.jsx";
-import { dayBucket } from "../lib/day.js";
+import { buildDayGroups } from "../lib/day.js";
+import MatchListSkeleton from "../components/MatchListSkeleton.jsx";
 import styles from "./Matches.module.css";
 
 export default function Matches() {
@@ -46,18 +47,12 @@ export default function Matches() {
   if (!matches) {
     return (
       <div className="container">
-        <Skeleton />
+        <MatchListSkeleton />
       </div>
     );
   }
 
-  const groups = [];
-  for (const m of matches) {
-    const label = dayBucket(m.kickoff_at);
-    let g = groups.find((x) => x.label === label);
-    if (!g) groups.push((g = { label, items: [] }));
-    g.items.push(m);
-  }
+  const groups = buildDayGroups(matches);
 
   return (
     <div className="container">
@@ -93,13 +88,3 @@ export default function Matches() {
   );
 }
 
-function Skeleton() {
-  return (
-    <div className={styles.skeletonWrap} aria-hidden="true">
-      <div className={styles.skelTitle} />
-      {[0, 1, 2].map((i) => (
-        <div key={i} className={styles.skelCard} />
-      ))}
-    </div>
-  );
-}
