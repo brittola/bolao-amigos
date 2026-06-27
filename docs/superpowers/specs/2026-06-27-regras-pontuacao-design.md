@@ -24,8 +24,8 @@ Palpites bônus:
 
 | Bônus | Pontos |
 |---|---|
-| Campeão | **30** |
-| Artilheiro | **30** |
+| Campeão | **35** |
+| Artilheiro | **35** |
 
 Valores antigos (para referência): exato 5, resultado 3, bônus 10/10.
 
@@ -59,8 +59,8 @@ jogos com vencedor. Comportamento esperado.
   - `exactScore: 25`
   - novo `goalDifference: 15`
   - `correctWinner: 12`
-  - `bonusChampion: 30`
-  - `bonusTopScorer: 30`
+  - `bonusChampion: 35`
+  - `bonusTopScorer: 35`
 - `computeMatchPoints` ganha o tier de saldo entre o exato e o de resultado:
   ```
   if (exact) return RULES.exactScore;          // 25
@@ -99,7 +99,7 @@ jogos com vencedor. Comportamento esperado.
   - real 1-1, palpite 2-2 → `goalDifference` (15) (empate com saldo certo)
   - real 1-1, palpite 1-1 → `exactScore` (25)
   - real 2-0, palpite 0-1 → 0
-  - bônus campeão/artilheiro → 30 (via `RULES.bonusChampion`/`bonusTopScorer`)
+  - bônus campeão/artilheiro → 35 (via `RULES.bonusChampion`/`bonusTopScorer`)
   - Os testes usam as constantes `RULES.*` (não números crus), então comparações
     simbólicas seguem válidas; ajustar apenas os casos cujo tier muda (ex.: empate
     "2-2 para 1-1" que antes era `correctWinner` agora é `goalDifference`).
@@ -109,7 +109,7 @@ jogos com vencedor. Comportamento esperado.
     cria bônus com `points` antigo + um `bonus_results`;
   - `POST /admin/recompute` → 200 com resumo;
   - confere que os `points`/`is_exact` dos palpites foram regravados conforme as regras
-    novas e os bônus acertados viraram 30.
+    novas e os bônus acertados viraram 35.
 
 ## Não-objetivos (YAGNI)
 

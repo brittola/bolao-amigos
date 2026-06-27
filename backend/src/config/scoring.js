@@ -8,8 +8,8 @@ export const RULES = {
   exactScore: 25, // cravou o placar exato
   goalDifference: 15, // acertou o vencedor e o saldo de gols, mas não o placar
   correctWinner: 12, // acertou o resultado (vencedor/empate), mas não o saldo
-  bonusChampion: 30, // acertou o campeão do torneio
-  bonusTopScorer: 30, // acertou o artilheiro do torneio
+  bonusChampion: 35, // acertou o campeão do torneio
+  bonusTopScorer: 35, // acertou o artilheiro do torneio
 };
 
 /** Sinal do confronto: 1 mandante vence, 0 empate, -1 visitante vence. */

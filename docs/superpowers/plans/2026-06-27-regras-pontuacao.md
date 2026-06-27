@@ -10,7 +10,7 @@
 
 ## Global Constraints
 
-- **Scoring values (exact, verbatim):** placar exato = **25**; mesmo vencedor e mesmo saldo de gols (não exato) = **15**; mesmo resultado (vencedor/empate) com saldo diferente = **12**; bônus campeão = **30**; bônus artilheiro = **30**.
+- **Scoring values (exact, verbatim):** placar exato = **25**; mesmo vencedor e mesmo saldo de gols (não exato) = **15**; mesmo resultado (vencedor/empate) com saldo diferente = **12**; bônus campeão = **35**; bônus artilheiro = **35**.
 - **Tiers are exclusive** — return the highest applicable, never summed. Evaluation order: exact → goal-difference → outcome → 0.
 - **Draws:** a correct draw prediction for a drawn match always matches goal difference (0) → falls in the 15 tier (or 25 if exact). The 12 tier only occurs for matches with a winner. Expected.
 - **`is_exact`** stays defined as `points === RULES.exactScore` (now 25) — no code change beyond the constant value.
@@ -30,7 +30,7 @@
 
 **Interfaces:**
 - Consumes: nothing new.
-- Produces: `RULES = { exactScore: 25, goalDifference: 15, correctWinner: 12, bonusChampion: 30, bonusTopScorer: 30 }`. `computeMatchPoints(prediction, result)` returns one of those values or 0, with the exclusive tier order exact → goalDifference → correctWinner → 0. `computeBonusPoints` unchanged in shape (values come from RULES).
+- Produces: `RULES = { exactScore: 25, goalDifference: 15, correctWinner: 12, bonusChampion: 35, bonusTopScorer: 35 }`. `computeMatchPoints(prediction, result)` returns one of those values or 0, with the exclusive tier order exact → goalDifference → correctWinner → 0. `computeBonusPoints` unchanged in shape (values come from RULES).
 
 - [ ] **Step 1: Rewrite the `computeMatchPoints` tests (failing)**
 
@@ -101,8 +101,8 @@ export const RULES = {
   exactScore: 25, // cravou o placar exato
   goalDifference: 15, // acertou o vencedor e o saldo de gols, mas não o placar
   correctWinner: 12, // acertou o resultado (vencedor/empate), mas não o saldo
-  bonusChampion: 30, // acertou o campeão do torneio
-  bonusTopScorer: 30, // acertou o artilheiro do torneio
+  bonusChampion: 35, // acertou o campeão do torneio
+  bonusTopScorer: 35, // acertou o artilheiro do torneio
 };
 ```
 
@@ -136,7 +136,7 @@ Then fix the hardcoded totals in `backend/tests/ranking.test.js` so they survive
 Comments (lines 24–25):
 ```js
     // Ana: 1 exato (25) + 1 correctWinner (12) = 37, 1 exato
-    // Bia: 1 exato (25) + bonus champion (30) = 55, 1 exato
+    // Bia: 1 exato (25) + bonus champion (35) = 60, 1 exato
 ```
 
 Assertions (lines 40–41):
@@ -246,7 +246,7 @@ describe('POST /admin/recompute', () => {
     expect(byUser[admin.id]).toMatchObject({ points: RULES.goalDifference, is_exact: false }); // 15
 
     const bonus = await db('bonus_predictions').where({ user_id: player.id, type: 'champion' }).first();
-    expect(bonus.points).toBe(RULES.bonusChampion); // 30
+    expect(bonus.points).toBe(RULES.bonusChampion); // 35
   });
 });
 ```

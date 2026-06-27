@@ -22,7 +22,7 @@ describe('GET /ranking', () => {
     const m2 = await createMatch({ api_fixture_id: 2, kickoff_at: new Date().toISOString(), status: 'FT', home_score: 0, away_score: 0 });
 
     // Ana: 1 exato (25) + 1 correctWinner (12) = 37, 1 exato
-    // Bia: 1 exato (25) + bonus champion (30) = 55, 1 exato
+    // Bia: 1 exato (25) + bonus champion (35) = 60, 1 exato
     await db('predictions').insert([
       { user_id: ana.id, match_id: m1.id, home_score: 2, away_score: 1, points: RULES.exactScore, is_exact: true },
       { user_id: ana.id, match_id: m2.id, home_score: 1, away_score: 1, points: RULES.correctWinner, is_exact: false },
