@@ -52,6 +52,9 @@ describe('POST /admin/recompute', () => {
     await db('bonus_results').insert({ type: 'champion', value: 'Brasil', set_by: admin.id, updated_at: db.fn.now() });
     await db('bonus_predictions').insert({ user_id: player.id, type: 'champion', value: 'Brasil', points: 1 });
 
+    await db('bonus_results').insert({ type: 'top_scorer', value: 'Mbappé', set_by: admin.id, updated_at: db.fn.now() });
+    await db('bonus_predictions').insert({ user_id: player.id, type: 'top_scorer', value: 'Mbappé', points: 1 });
+
     const res = await request(app).post('/admin/recompute').set('Authorization', `Bearer ${token}`);
     expect(res.status).toBe(200);
     expect(res.body).toMatchObject({ matches: 1, bonus: 2 });
@@ -63,5 +66,8 @@ describe('POST /admin/recompute', () => {
 
     const bonus = await db('bonus_predictions').where({ user_id: player.id, type: 'champion' }).first();
     expect(bonus.points).toBe(RULES.bonusChampion); // 30
+
+    const topScorer = await db('bonus_predictions').where({ user_id: player.id, type: 'top_scorer' }).first();
+    expect(topScorer.points).toBe(RULES.bonusTopScorer); // 30
   });
 });
